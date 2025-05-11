@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/tabs";
 import { formatPrice } from "@/lib/utils";
 import { ArrowLeft, Check, ShoppingCart, Share2 } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 const ProductDetailPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -20,6 +22,7 @@ const ProductDetailPage = () => {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
+  const { addItem } = useCart(); // Add useCart hook
   
   // Find the product by ID
   const product = allProducts.find((p) => p.id === productId);
@@ -57,6 +60,11 @@ const ProductDetailPage = () => {
     if (newQuantity >= 1) {
       setQuantity(newQuantity);
     }
+  };
+
+  // Handle adding product to cart
+  const handleAddToCart = () => {
+    addItem(product, quantity);
   };
 
   return (
@@ -184,7 +192,10 @@ const ProductDetailPage = () => {
 
               {/* Add to Cart Button */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Button className="luxury-button flex-1 py-6">
+                <Button 
+                  className="luxury-button flex-1 py-6"
+                  onClick={handleAddToCart}
+                >
                   <ShoppingCart size={18} className="mr-2" /> Add to Cart
                 </Button>
                 <Button variant="outline" size="icon" className="border-gold/30 text-gold hover:bg-gold/10 py-6">
