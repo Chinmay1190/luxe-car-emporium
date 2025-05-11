@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -11,9 +11,17 @@ import { ArrowRight, Check, ChevronLeft, Trash2, ShoppingCart, IndianRupee } fro
 import { toast } from "sonner";
 
 const CartPage = () => {
+  const location = useLocation();
   const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+
+  // Check if redirected from successful checkout
+  useEffect(() => {
+    if (location.state?.checkoutSuccess) {
+      setCheckoutSuccess(true);
+    }
+  }, [location.state]);
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -23,12 +31,10 @@ const CartPage = () => {
     
     setIsCheckingOut(true);
     
-    // Simulate checkout process
+    // Simulate checkout process - now just redirects to checkout page
     setTimeout(() => {
-      setCheckoutSuccess(true);
-      clearCart();
       setIsCheckingOut(false);
-    }, 2000);
+    }, 500);
   };
 
   if (checkoutSuccess) {
@@ -170,10 +176,12 @@ const CartPage = () => {
                   
                   <Button 
                     className="luxury-button w-full py-6"
-                    onClick={handleCheckout}
                     disabled={isCheckingOut}
+                    asChild
                   >
-                    {isCheckingOut ? "Processing..." : "Checkout"} {!isCheckingOut && <ArrowRight size={16} className="ml-2" />}
+                    <Link to="/checkout">
+                      {isCheckingOut ? "Processing..." : "Proceed to Checkout"} {!isCheckingOut && <ArrowRight size={16} className="ml-2" />}
+                    </Link>
                   </Button>
                   
                   <div className="mt-4">
